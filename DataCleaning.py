@@ -9,21 +9,23 @@ from ModelsAirbnb import *
 from modelsTuned import *
 
 
-# Importing the Data :
+# IMPORTING THE DATA FROM CSV FILES :
+
 train_users = pd.read_csv('/Users/quentinpradelle/Desktop/EssecCentrale/Cours Centrale/Machine Learning/AssignmentsAndProject/GroupProject/DataSets/train_users_2.csv')
 test_users = pd.read_csv('/Users/quentinpradelle/Desktop/EssecCentrale/Cours Centrale/Machine Learning/AssignmentsAndProject/GroupProject/DataSets/test_users.csv')
-# sessions = pd.read_csv('/Users/quentinpradelle/Desktop/EssecCentrale/Cours Centrale/Machine Learning/AssignmentsAndProject/GroupProject/DataSets/sessions.csv')
 countries = pd.read_csv('/Users/quentinpradelle/Desktop/EssecCentrale/Cours Centrale/Machine Learning/AssignmentsAndProject/GroupProject/DataSets/countries.csv')
 age_gender = pd.read_csv('/Users/quentinpradelle/Desktop/EssecCentrale/Cours Centrale/Machine Learning/AssignmentsAndProject/GroupProject/DataSets/age_gender_bkts.csv')
 train_labels = train_users['country_destination'] 
 
-# Merging train and test users so we can clean it.
+# MERGING TRAIN AND TEST SETS TO CLEAN IT 
 
 users = pd.concat((train_users, test_users), axis=0, ignore_index=True)
 
-# Remove ID's and set it as index 
+# REMOVE ID's AND SET IT AS INDEX
 
 users.set_index('id', inplace = True)
+
+#_______________________________________DATA CLEANING________________________________________#
 
 # HANDLING MISSING VALUES :
 
@@ -37,14 +39,12 @@ users.replace('-unknown-', np.nan, inplace=True)
 users_nan = (users.isnull().sum() / users.shape[0]) * 100
 users_nan[users_nan > 0].drop('country_destination')
 
-
 # The two most important features to treat in missing values are gender and age.
 
 # -- Gender -- :
 
 users.gender.value_counts(dropna = False).plot(kind='bar', color='#FD5C64')
 plt.xlabel('Gender')
-
 
 # There is a lot of nan values + "other" values to treat. Not a big 
 # difference between male and females. Let's see if we can fill the nan with 
@@ -66,7 +66,6 @@ plt.show()
 # We will set the Na values of gender to 'Non defined', and set gender as a dummy variable later on
 
 users['gender'][users.gender.isnull()] = 'Non Defined'
-
 
 # -- Age -- :
 
@@ -218,14 +217,12 @@ users_cleaned.select_dtypes(include=['object'])
 users_cleaned.columns.get_loc("country_destination")
 
 
-# ________________________________________________MAIN FUNCTION_____________________________________________
+# ________________________________________________MAIN FUNCTION_____________________________________________#
 
 # Transform Dataframe to np array
 
 users_cleaned = users_cleaned.convert_objects(convert_numeric = True)
 users_cleaned = users_cleaned.values 
-
-
 
 # Separating user_cleaned into train and test sets
 
@@ -234,6 +231,7 @@ X_test = users_cleaned[213451:, :]
 Y_train = X_train[:, 0] 
 
 print(Y_train)
+
 # Now we drop the column 'country_destination' that will be the one we try to predict
 
 X_train = delete(X_train, 0, 1)
@@ -270,8 +268,7 @@ print(predictedLabels)
 
 train_users.head()
 
-
-# Now let's create the submission file for Kaggle : 
+# CREATING SUBMISSION FILE FOR KAGGLE
 
 Y_predict_0 = test_users[['id']].copy()
 Y_predict_1 = test_users[['id']].copy()
